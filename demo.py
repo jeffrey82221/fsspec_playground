@@ -4,21 +4,21 @@ from fsspec.implementations.dirfs import DirFileSystem
 Read and Write from/to Local FileSystem
 """
 fs = LocalFileSystem()
-f = fs.open('DEMO.md', 'w')
-f.write('hello')
+with fs.open('DEMO.md', 'w') as f:
+    f.write('hello')
 
-f = fs.open('DEMO.md', 'r')
-print(f.read())
+with fs.open('DEMO.md', 'r') as f:
+    print(f.read())
 print(fs.info('DEMO.md'))
 """
 Change root_path of a filesystem
 """
 fs = DirFileSystem('./data')
-f = fs.open('DEMO.md', 'w')
-f.write('hello')
+with fs.open('DEMO.md', 'w') as f:
+    f.write('hello')
 
-f = fs.open('DEMO.md', 'r')
-print(f.read())
+with fs.open('DEMO.md', 'r') as f:
+    print(f.read())
 print(fs.info('DEMO.md'))
 
 """
@@ -26,5 +26,21 @@ Read and Write from/to Dropbox FileSystem
 """
 import os
 import dropboxdrivefs as dbx
+import time
 fs = dbx.DropboxDriveFileSystem(token=os.environ['DROPBOX_TOKEN'])
-fs.put_file("NEW.md", "/Data/test_dropbox/NEW.txt")
+with fs.open('/test_dropbox/DEMO.md', 'w') as f:
+    f.write('hello')
+
+with fs.open('/test_dropbox/DEMO.md', 'r') as f:
+    print(f.read())
+print(fs.info('/test_dropbox/DEMO.md'))
+"""
+Read and Write from/to Dropbox FileSystem's /test_dropbox directory
+"""
+dfs = DirFileSystem('/test_dropbox', fs)
+with dfs.open('DEMO2.md', 'w') as f:
+    f.write('hello')
+
+with dfs.open('DEMO2.md', 'r') as f:
+    print(f.read())
+print(dfs.info('DEMO2.md'))
