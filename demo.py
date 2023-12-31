@@ -23,7 +23,10 @@ with fs.open('DEMO.md', 'w') as f:
 with fs.open('DEMO.md', 'r') as f:
     print(f.read())
 print(fs.info('DEMO.md'))
-
+assert fs.exists('DEMO.md')
+fs.rm('DEMO.md')
+assert not fs.exists('DEMO.md')
+print('root_path:', fs.path)
 """
 Read and Write from/to Dropbox FileSystem
 """
@@ -48,3 +51,25 @@ with dfs.open('DEMO2.md', 'r') as f:
     print(f.read())
 print(dfs.info('DEMO2.md'))
 
+assert dfs.exists('DEMO2.md')
+
+"""
+Upload PyArrow
+"""
+import pandas as pd 
+table = pd.read_parquet('../dropbox_duckdb_playground/examples/data/subgraph/output/has_requirement.parquet')
+import io
+buff = io.BytesIO()
+table.to_parquet(buff)
+buff.seek(0)
+memory_data = buff.getbuffer()
+print(len(memory_data))
+
+# fs.upload('../dropbox_duckdb_playground/examples/data/subgraph/output/package.parquet', '/test.parquet')
+
+# table['partition'] = table.index.map(lambda x: str(x % 100))
+# tables = [x[1] for x in table.groupby('partition')]
+# for i, t in enumerate(tables):
+#     with fs.open(f'/test.{i}.parquet', 'wb') as f:
+#         t.to_parquet(f)
+#     print('upload', i)
