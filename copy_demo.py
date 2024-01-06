@@ -30,17 +30,24 @@ assert isinstance(fs, AbstractFileSystem)
 with fs.open('/test_dropbox/DEMO.md', 'w') as f:
     f.write('hello')
 
+print(fs.info('/test_dropbox/DEMO.md'))
+print(fs.info('/test_dropbox'))
+print(fs.isdir('/test_dropbox/DEMO.md'))
+"""
+New copy method
+"""
+assert fs.exists('/test_dropbox/DEMO.md')
+# fs.cp_file('/test_dropbox/DEMO.md', '/test_dropbox/DEMO_COPY2.md')
+# -> NotImplementedError
 """
 Copy file
 """
 import dropbox
 client = dropbox.Dropbox(os.environ['DROPBOX_TOKEN'])
 client.files_copy('/test_dropbox/DEMO.md', '/test_dropbox/DEMO_COPY.md')
-
 """
 Copy folder
 """
 import dropbox
 client = dropbox.Dropbox(os.environ['DROPBOX_TOKEN'])
 client.files_copy('/test_dropbox', '/test_dropbox_copy')
-
