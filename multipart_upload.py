@@ -33,15 +33,16 @@ def partial_upload(item):
 
 with ThreadPoolExecutor(max_workers=8) as executor:
     executor.map(partial_upload, enumerate(chunks))
-
-
+print(dfs, dfs.ls('/'))
+raise
+files = dict([(fn['name'], fn['size']) for fn in dfs.ls('') if fn['type'] == 'file'])
 def partial_download(index):
-    with dfs.open(f'{index}.parquet', 'rb') as f:
+    fn = f'{index}.parquet'
+    with dfs.open(fn, 'rb') as f:
         result = f.read()
         print('download', index, 'size:', len(result))
+        assert len(result) == files[fn], f'download size does not match with remote size. download size:{len(result)}; remote size: {files[fn]}'
     return index, result
-
-files = [f for f in fs.listdir('/chunks') if f['name'] != '/chunks' and f['name'].startswith('/chunks')]
 print('files', files)
 remote_chunk_count = len(files)
 print('remote_chunk_count:', remote_chunk_count)
@@ -50,7 +51,7 @@ with ThreadPoolExecutor(max_workers=8) as executor:
 print('size:', sum([len(x[1]) for x in results]))
 output_bytes = b''.join(list([x[1] for x in results]))
 print('output_bytes', len(output_bytes))
-buff = io.BytesIO(output_bytes)
+buff = io.BytesIO(b''.join(list([x[1] for x in results])))
 buff.seek(0)
 download_table = pd.read_parquet(buff)
 fs.rm('/chunks')
